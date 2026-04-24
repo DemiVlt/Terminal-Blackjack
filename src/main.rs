@@ -1,11 +1,7 @@
-#![allow(dead_code, unused)]
-use core::hash;
-use std::{ops::Index, process::Command};
-
 use rand::{
     rng,
     rngs::ThreadRng,
-    seq::{IndexedRandom, IteratorRandom, SliceRandom},
+    seq::{IteratorRandom, SliceRandom},
 };
 
 struct Game {
@@ -16,7 +12,7 @@ struct Game {
     rng: ThreadRng,
 }
 
-fn aux_hand_val(hand: &Vec<Card>) -> u8 {
+fn aux_hand_val(hand: &[Card]) -> u8 {
     let value_of_hand_a11 = hand.iter().map(|x| x.value_a11()).sum::<u8>();
     let value_of_hand_a1 = hand.iter().map(|x| x.value_a1()).sum::<u8>();
 
@@ -47,7 +43,7 @@ impl Game {
         self.player_names = players.into_iter().map(|x| x.name).collect();
 
         println!("\nAnd that's a round!");
-        std::io::stdin().read_line(&mut "".to_string());
+        let _ = std::io::stdin().read_line(&mut "".to_string());
     }
 }
 
@@ -66,7 +62,7 @@ fn whether_npc(name_of_user: &str, player_name: &str) -> String {
 }
 
 impl Player {
-    fn hitting_is_optimal(&self, mut deck: Vec<Card>, dealer_hand: &Vec<Card>) -> bool {
+    fn hitting_is_optimal(&self, mut deck: Vec<Card>, dealer_hand: &[Card]) -> bool {
         deck.push(dealer_hand[0].clone());
 
         let known = &dealer_hand[1];
@@ -75,7 +71,7 @@ impl Player {
         let mut worlds_won = 0;
 
         for (i, hidden) in deck.iter().enumerate() {
-            let dealer_fog_hand_val = aux_hand_val(&vec![hidden.clone(), known.clone()]);
+            let dealer_fog_hand_val = aux_hand_val(&[hidden.clone(), known.clone()]);
 
             let mut rest = deck.clone();
             rest.remove(i);
@@ -98,9 +94,9 @@ impl Player {
         let chance_of_victory_upon_standing = deck
             .iter()
             .filter(|hidden| {
-                self.hand_val() >= aux_hand_val(&vec![(*hidden).clone(), known.clone()])
+                self.hand_val() >= aux_hand_val(&[(*hidden).clone(), known.clone()])
                     && self.hand_val() < 21
-                    || aux_hand_val(&vec![(*hidden).clone(), known.clone()]) > 21
+                    || aux_hand_val(&[(*hidden).clone(), known.clone()]) > 21
             })
             .count() as f32
             / deck.len() as f32;
@@ -112,7 +108,7 @@ impl Player {
         aux_hand_val(&self.hand)
     }
 
-    fn busted(&self, name_of_user: &str) -> bool {
+    fn busted(&self, _name_of_user: &str) -> bool {
         if self.hand_val() > 21 {
             println!("Oof! {} busted!", self.name,);
             return true;
@@ -158,7 +154,7 @@ impl Player {
         }
 
         println!("Their retirement fund is now at {}.", self.retirement_fund);
-        std::io::stdin().read_line(&mut "".to_string());
+        let _ = std::io::stdin().read_line(&mut "".to_string());
     }
 }
 
@@ -217,6 +213,7 @@ enum Rank {
 // NEVER CHANGE THE SIZE OF THIS (no reason to anyway, but still)
 #[repr(u8)]
 #[derive(Clone, PartialEq, Eq)]
+#[allow(dead_code, unused)]
 enum Suit {
     Spade = 0,
     Heart = 1,
@@ -260,7 +257,7 @@ fn main() {
     let retirement_funds = vec![64isize; 5];
     let mut player_names: Vec<String> = ["McMurphy", "Taber", "Martini", "Cheswick", "Billy"]
         .into_iter()
-        .map(|x| String::from(x))
+        .map(String::from)
         .collect();
     player_names.shuffle(&mut rng);
 
@@ -339,14 +336,14 @@ fn main() {
                 );
             }
 
-            std::io::stdin().read_line(&mut "".to_string());
+            let _ = std::io::stdin().read_line(&mut "".to_string());
 
             let player = Player {
                 name: player_name.to_string(),
                 hand,
                 retirement_fund: *retirement_fund,
                 bet: match player_name.as_str() {
-                    x if x == &game.name_of_user => bet,
+                    x if x == game.name_of_user => bet,
                     "Martini" => 6,
                     "Cheswick" => (10..16).choose(&mut game.rng).unwrap(),
                     "Taber" => (16..32).choose(&mut game.rng).unwrap(),
@@ -361,7 +358,7 @@ fn main() {
 
         println!();
 
-        for mut player in players.iter_mut() {
+        for player in players.iter_mut() {
             player.hand.push(deck.pop().unwrap());
 
             println!(
@@ -372,14 +369,14 @@ fn main() {
             );
 
             player.blackjacked(&game.name_of_user);
-            std::io::stdin().read_line(&mut "".to_string());
+            let _ = std::io::stdin().read_line(&mut "".to_string());
         }
 
         println!();
 
         let dealer_hand_before_they_hit_or_stand = players.last().unwrap().hand.clone();
 
-        for (i, mut player) in players.iter_mut().enumerate() {
+        for player in players.iter_mut() {
             if player.name == *game.dealer_name || player.hand_val() == 21 {
                 continue;
             }
@@ -425,10 +422,10 @@ fn main() {
                 }
 
                 if player.name != game.name_of_user {
-                    std::io::stdin().read_line(&mut "".to_string());
+                    let _ = std::io::stdin().read_line(&mut "".to_string());
                 }
             }
-            std::io::stdin().read_line(&mut "".to_string());
+            let _ = std::io::stdin().read_line(&mut "".to_string());
         }
 
         let mut dealer = players.pop().unwrap();
@@ -442,8 +439,8 @@ fn main() {
         );
 
         if dealer.blackjacked(&game.name_of_user) {
-            std::io::stdin().read_line(&mut "".to_string());
-            for mut player in players.iter_mut() {
+            let _ = std::io::stdin().read_line(&mut "".to_string());
+            for player in players.iter_mut() {
                 player.bet_results(&mut dealer, true);
             }
             game.end_round(players, dealer);
@@ -463,9 +460,9 @@ fn main() {
 
         let blackjacked = dealer.blackjacked(&game.name_of_user);
         let busted = dealer.busted(&game.name_of_user);
-        std::io::stdin().read_line(&mut "".to_string());
+        let _ = std::io::stdin().read_line(&mut "".to_string());
 
-        for mut player in players.iter_mut() {
+        for player in players.iter_mut() {
             let player_won = !blackjacked
                 && (busted || player.hand_val() > 21 || player.hand_val() < dealer.hand_val());
             player.bet_results(&mut dealer, player_won);
