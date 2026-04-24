@@ -1,2 +1,1 @@
-"# Terminal-Blackjack" 
-"# Terminal-Blackjack" 
+add description & tutorial
