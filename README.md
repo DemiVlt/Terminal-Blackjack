@@ -1,3 +1,5 @@
+If you've played blackjack before, then it should be mostly the same as what you're used to, though I made some tweaks here or there, i.e., the dealer is forced to stand if their hand is over 16 and their hand must be evaluated at 11 unless that'd make them immediately bust. See also https://en.wikipedia.org/wiki/Blackjack, especially the "variations" and "rules of play at casinos" sections to get an idea of what the game is like and how it can vary.
+
 Simply downloading and then double-clicking the terminal_blackjack.exe file should start up the game just fine (download it by clicking on its name, then clicking the download raw file button to the right), but it is recommended to open it through the terminal to guarantee the screen is cleared properly instead of outputting c or whatever. This is done by typing cmd into the taskbar, as shown:
 <img width="1680" height="1050" alt="Screenshot (31)" src="https://github.com/user-attachments/assets/226c22fa-f248-4b40-b1ca-f47e58edd87e" />
 Then, ensure that you're in the same folder as where you've placed the terminal_blackjack.exe file.
